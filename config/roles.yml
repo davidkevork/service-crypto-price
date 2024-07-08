@@ -1,0 +1,17 @@
+- Effect: Allow
+  Action:
+    - lambda:InvokeFunction
+  Resource: arn:aws:lambda:*:*:function:${self:service}*
+
+- Effect: Allow
+  Action:
+    - dynamodb:PutItem
+    - dynamodb:Query
+  Resource:
+    - arn:aws:dynamodb:*:*:table/service-crypto-price-history
+
+- Effect: Allow
+  Action:
+    - ses:SendEmail
+  Resource:
+    - ${ssm:service-crypto-price-ses-arn}

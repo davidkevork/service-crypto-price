@@ -1,0 +1,48 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Resources for service-crypto-price
+
+Parameters:
+  SESArnParam:
+    Description: SES ARN
+    Type: String
+    MinLength: 1
+  CoinGeckoApiKeyParam:
+    Description: CoinGecko API Key
+    Type: String
+    MinLength: 1
+
+Resources:
+  ## DYNAMO DB
+  CryptoPriceHistoryTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: service-crypto-price-history
+      AttributeDefinitions:
+        - AttributeName: coinId
+          AttributeType: S
+        - AttributeName: createdAt
+          AttributeType: S
+      KeySchema:
+        - AttributeName: coinId
+          KeyType: HASH
+        - AttributeName: createdAt
+          KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      StreamSpecification:
+        StreamViewType: NEW_IMAGE
+
+  ## SSM
+  SESArnSSM:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: service-crypto-price-ses-arn
+      Type: String
+      Value: !Sub ${SESArnParam}
+  ApiKeySSM:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: service-crypto-price-coingecko-api-key
+      Type: String
+      Value: !Sub ${CoinGeckoApiKeyParam}

@@ -1,0 +1,28 @@
+service: service-crypto-price
+
+plugins:
+  - serverless-webpack
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  iam:
+    role:
+      statements: ${file(./config/roles.yml)}
+  environment:
+    coingeckoApiKey: ${ssm:service-crypto-price-coingecko-api-key}
+    sesArn: ${ssm:service-crypto-price-ses-arn}
+
+functions:
+  getPrice:
+    handler: src/routes/get-price/index.handler
+    events:
+      - httpApi:
+          path: /price
+          method: post
+  getHistory:
+    handler: src/routes/get-history/index.handler
+    events:
+      - httpApi:
+          path: /history
+          method: get
