@@ -4,8 +4,8 @@ import { History, HistoryRepository } from '../repository/history-repository';
 export class GetHistoryService {
     private readonly historyRepository: HistoryRepository;
 
-    constructor() {
-        this.historyRepository = new HistoryRepository();
+    constructor(historyRepository: HistoryRepository) {
+        this.historyRepository = historyRepository;
     }
 
     public async getPriceHistory(coinId: CoinID, from?: string, to?: string): Promise<History[]> {

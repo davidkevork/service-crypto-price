@@ -1,4 +1,5 @@
 import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
+import { environment } from '../common/environment';
 
 export class EmailNotificationRepository {
     protected readonly sesClient: SESClient;
@@ -9,8 +10,9 @@ export class EmailNotificationRepository {
 
     public async notify(email: string, subject: string, body: string) {
         try {
-            const sesArn = process.env.sesArn as string;
-            const sesEmail = sesArn.split('/').at(-1);
+            const sesArn = environment.sesArn;
+            // arn format: arn:aws:ses:region:accountId:identity/email
+            const sesEmail = sesArn.split('/').at(1);
 
             await this.sesClient.send(
                 new SendEmailCommand({

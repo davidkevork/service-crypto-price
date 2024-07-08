@@ -3,6 +3,7 @@ import { GetHistoryParamsSchema } from './schema';
 import { validateInput } from '../../common/validate';
 import { GetHistoryService } from '../../service/get-history-service';
 import { CoinID } from '../../common/types/coins';
+import { HistoryRepository } from '../../repository/history-repository';
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     try {
@@ -10,7 +11,8 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
         await validateInput(params || {}, GetHistoryParamsSchema);
         const { coinId, from, to } = params as Record<string, string>;
 
-        const getHistoryService = new GetHistoryService();
+        const historyRepository = new HistoryRepository();
+        const getHistoryService = new GetHistoryService(historyRepository);
         const priceHistory = await getHistoryService.getPriceHistory(coinId as CoinID, from, to);
 
         const history = priceHistory.map(({ coinId, currency, price, createdAt }) => ({

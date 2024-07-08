@@ -1,16 +1,23 @@
+import { environment } from '../common/environment';
 import { CoinID, Currency } from '../common/types/coins';
 import { EmailNotificationRepository } from '../repository/email-notification-repository';
 import { HistoryRepository } from '../repository/history-repository';
 
-import axios from 'axios';
+import { AxiosStatic } from 'axios';
 
 export class GetPriceService {
+    private readonly axios: AxiosStatic;
     private readonly historyRepository: HistoryRepository;
     private readonly emailNotificationRepository: EmailNotificationRepository;
 
-    constructor() {
-        this.historyRepository = new HistoryRepository();
-        this.emailNotificationRepository = new EmailNotificationRepository();
+    constructor(
+        axios: AxiosStatic,
+        historyRepository: HistoryRepository,
+        emailNotificationRepository: EmailNotificationRepository,
+    ) {
+        this.axios = axios;
+        this.historyRepository = historyRepository;
+        this.emailNotificationRepository = emailNotificationRepository;
     }
 
     public async getPrice(coinId: CoinID, currency: Currency, email: string): Promise<number> {
@@ -23,7 +30,7 @@ export class GetPriceService {
     }
 
     private async fetchPrice(coinId: CoinID, currency: Currency): Promise<number> {
-        const request = await axios({
+        const request = await this.axios({
             url: 'https://api.coingecko.com/api/v3/simple/price',
             params: {
                 ids: coinId,
@@ -34,7 +41,7 @@ export class GetPriceService {
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
-                'x-cg-api-key': process.env.coingeckoApiKey as string,
+                'x-cg-api-key': environment.coingeckoApiKey,
             },
         });
 
